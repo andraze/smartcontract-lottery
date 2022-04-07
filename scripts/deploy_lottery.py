@@ -1,4 +1,10 @@
-from scripts.helpful_scripts import get_account, get_contract, fund_with_link
+from scripts.helpful_scripts import (
+    LOCAL_DEPLOYMENT_ENVIORNMENTS,
+    LOCAL_FORKED_ENVIORMENTS,
+    get_account,
+    get_contract,
+    fund_with_link,
+)
 from brownie import config, Lottery, network
 import time
 
@@ -29,7 +35,7 @@ def start_lottery():
 def enter_lottery():
     account = get_account()
     lottery = Lottery[-1]
-    value = lottery.getEntranceFee() + 100000
+    value = lottery.getEntranceFee()
     tx = lottery.enter({"from": account, "value": value})
     tx.wait(1)
     print("You entered the lottery!")
@@ -45,12 +51,27 @@ def end_lottery():
     ending_tx = lottery.endLottery({"from": account})
     ending_tx.wait(1)
     # Wait for randomness (oracle node) to respond.
-    time.sleep(60)
+    time.sleep(120)
     print(f"{lottery.recentWinner()} is the WINNER!")
 
 
 def main():
-    deploy_lottery()
-    start_lottery()
-    enter_lottery()
-    end_lottery()
+    if network.show_active() in LOCAL_DEPLOYMENT_ENVIORNMENTS:
+        lottery = deploy_lottery()
+        account = get_account()
+        lottery.startLottery({"from": account})
+        lottery.enter({"from": account, "value": lottery.getEntranceFee()})
+        fund_with_link(lottery)
+        end_transaction = lottery.endLottery({"from": account})
+        request_id = end_transaction.events["requestedRandomness"]["requestId"]
+        STATIC_RNG = 777
+        get_contract("vrf_coordinator").callBackWithRandomness(
+            request_id, STATIC_RNG, lottery.address, {"from": account}
+        )
+        print(f"Participant :{account}")
+        print(f"Recent winner :{lottery.recentWinner()}")
+    else:
+        deploy_lottery()
+        start_lottery()
+        enter_lottery()
+        end_lottery()
