@@ -2,8 +2,9 @@
 2. Admin will choose when the lottery is over.
 3. Lottery will select a random winner.
 
-How do we want to test this?
-
+We test this using:
 1. `mainnet-fork`
-2. `development` with mocks
-3. `testnet`
+2. `ganache-development` with mocks
+3. `rinkeby-testnet`
+
+Lottery has been tested and deployed at: **'0x7b735E9e2DbF41462585e690FBD8C617275826c3'** on **Rinkeby test network**.
