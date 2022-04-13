@@ -8,3 +8,4 @@ We test this using:
 3. `rinkeby-testnet`
 
 Lottery has been tested and deployed at: **'0x7b735E9e2DbF41462585e690FBD8C617275826c3'** on **Rinkeby test network**.
+Check it out [here](https://rinkeby.etherscan.io/address/0x7b735E9e2DbF41462585e690FBD8C617275826c3).
